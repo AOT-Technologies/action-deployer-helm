@@ -1,0 +1,69 @@
+name: OpenShift Deployer
+description: OpenShift deployer with route verification or penetration testing
+branding:
+  icon: package
+  color: blue
+
+inputs:
+  ### Required
+  chart:
+    description: Chart name
+    required: true
+  release:
+    description: Release Name
+    required: true
+  repository:
+    description: Specify a helm chart repository url or source path
+    required: true
+  oc_namespace:
+    description: OpenShift namespace (e.g. abc123-dev)
+    required: true
+  oc_server:
+    description: OpenShift server (e.g. https://api.silver.devops.gov.bc.ca:6443)
+    required: true
+  oc_token:
+    description: OpenShift access token
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # Process variables and inputs
+    - name: Login
+      shell: bash
+      run: |
+        # Allow pipefail, since we could be catching oc create errors
+        set +o pipefail
+
+        oc login --token=${{ inputs.oc_token }} --server=${{ inputs.oc_server }}
+        oc project ${{ inputs.oc_namespace }}
+    - name: Install Helm
+      run: |
+        # Allow pipefail, since we could be catching errors
+        set +o pipefail
+
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+    - name: Add Repository
+      run: |
+        helm repository add {{inputs.release}} {{inputs.repository}}
+
+    - name: Install Chart
+      run: |
+        # Allow pipefail, since we could be catching errors
+        set +o pipefail
+
+        #Build --set string of values 
+        for value in ${{inputs.values}}
+        do
+          export VALUES+="--set $value "
+        done
+
+        if  [ helm upgrade ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $VALUES ] && [ helm upgrade ${{ inputs.release }} ${{ inputs.repository}}/${{ inputs.chart }} $VALUES]
+        then
+          if [ ! helm install ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $VALUES ]
+          then
+            helm install ${{ inputs.release }} ${{ inputs.repository }}/${{ inputs.chart }} $VALUES
+          fi
+        fi
