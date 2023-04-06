@@ -48,7 +48,6 @@ runs:
     - name: Add Repository
       run: |
         helm repository add {{inputs.release}} {{inputs.repository}}
-
     - name: Install Chart
       run: |
         # Allow pipefail, since we could be catching errors
