@@ -62,9 +62,9 @@ runs:
         export VALUES="${{inputs.values}}"
         export SETVAL=""
 
-        for value in $VALUES[@]
+        for value in "${!VALUES[@]}"
         do
-          echo "$value"
+          echo "value=$value"
           SETVAL+="--set $value "
         done
 
