@@ -58,7 +58,7 @@ runs:
         set +o pipefail
 
         #Build --set string of values 
-        for value in "${{inputs.values}}"
+        for value in ${{inputs.values[@]}}
         do
           echo "$value"
           export VALUES+="--set $value "
