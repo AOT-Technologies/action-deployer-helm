@@ -38,6 +38,7 @@ runs:
         oc login --token=${{ inputs.oc_token }} --server=${{ inputs.oc_server }}
         oc project ${{ inputs.oc_namespace }}
     - name: Install Helm
+      shell: bash
       run: |
         # Allow pipefail, since we could be catching errors
         set +o pipefail
@@ -46,9 +47,11 @@ runs:
         chmod 700 get_helm.sh
         ./get_helm.sh
     - name: Add Repository
+      shell: bash
       run: |
         helm repository add {{inputs.release}} {{inputs.repository}}
     - name: Install Chart
+      shell: bash
       run: |
         # Allow pipefail, since we could be catching errors
         set +o pipefail
