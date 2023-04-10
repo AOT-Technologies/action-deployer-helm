@@ -58,18 +58,22 @@ runs:
         set +o pipefail
 
         #Build --set string of values 
-        for value in "${{inputs.values}}"
+        
+        export VALUES="${{inputs.values}}"
+        export SETVAL=""
+
+        for value in $VALUES[@]
         do
           echo "$value"
-          export VALUES+="--set $value "
+          SETVAL+="--set $value "
         done
 
-        echo "$VALUES"
+        echo "$SETVAL"
 
-        if  [ (helm upgrade ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $VALUES)  &&  (helm upgrade ${{ inputs.release }} ${{ inputs.repository}}/${{ inputs.chart }} $VALUES)]
+        if  [ (helm upgrade ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $SETVAL)  &&  (helm upgrade ${{ inputs.release }} ${{ inputs.repository}}/${{ inputs.chart }} $SETVAL)]
         then
-          if [ ! helm install ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $VALUES ]
+          if [ ! helm install ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $SETVAL ]
           then
-            helm install ${{ inputs.release }} ${{ inputs.repository }}/${{ inputs.chart }} $VALUES
+            helm install ${{ inputs.release }} ${{ inputs.repository }}/${{ inputs.chart }} $SETVAL
           fi
         fi
