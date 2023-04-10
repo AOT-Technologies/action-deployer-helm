@@ -64,7 +64,7 @@ runs:
           export VALUES+="--set $value "
         done
 
-        echo $VALUES
+        echo "$VALUES"
 
         if  [ (helm upgrade ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $VALUES)  &&  (helm upgrade ${{ inputs.release }} ${{ inputs.repository}}/${{ inputs.chart }} $VALUES)]
         then
