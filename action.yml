@@ -69,11 +69,3 @@ runs:
         done
 
         echo "$SETVAL"
-
-        if  [ (helm upgrade ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $SETVAL)  &&  (helm upgrade ${{ inputs.release }} ${{ inputs.repository}}/${{ inputs.chart }} $SETVAL)]
-        then
-          if [ ! helm install ${{ inputs.release }} ${{ inputs.release }}/${{ inputs.chart }} $SETVAL ]
-          then
-            helm install ${{ inputs.release }} ${{ inputs.repository }}/${{ inputs.chart }} $SETVAL
-          fi
-        fi
