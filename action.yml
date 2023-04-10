@@ -50,7 +50,7 @@ runs:
     - name: Add Repository
       shell: bash
       run: |
-        helm repo add {{inputs.release}} {{inputs.repository}}
+        helm repo add ${{inputs.release}} ${{inputs.repository}}
     - name: Install Chart
       shell: bash
       run: |
